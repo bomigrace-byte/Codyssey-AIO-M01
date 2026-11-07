@@ -1,0 +1,12 @@
+</> gitignore
+# 환경 변수 및 비밀 정보
+.env
+.env.*
+!.env.example
+
+# 임시 파일
+*.tmp
+*.log
+
+# 편집기 임시 파일
+*~
