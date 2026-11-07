@@ -116,6 +116,13 @@ drwx------ ... permission-test
 
 **검증 결과:** 파일과 디렉터리의 접근 권한 변경에 성공했다.
 
+### Linux CLI 및 권한 실습
+![CLI 실습](docs/screenshots/cli-directory.png)
+
+![파일 권한](docs/screenshots/permission-file.png)
+
+![디렉터리 권한](docs/screenshots/permission-directory.png)
+
 ## 5. Docker 설치 및 기본 운영
 
 ### 5.1 Docker 설치 확인
@@ -147,6 +154,9 @@ Hello from Docker!
 ```
 
 Docker 이미지를 사용하여 컨테이너를 생성하고 실행하는 데 성공했다.
+
+### Docker 이미지 빌드
+![Docker 빌드](docs/screenshots/docker-build.png)
 
 ### 5.3 Ubuntu 컨테이너 실습
 
@@ -263,7 +273,9 @@ My first Docker web server.
 
 Docker 컨테이너의 80 포트와 호스트의 8081 포트를 연결하여 웹페이지 접속에 성공했다.
 
-증거: 스크린샷 추가 예정
+### 실행 결과 스크린샷
+
+![Docker 웹 서버 포트 매핑 결과](docs/screenshots/port-8081.png)
 
 ## 8. 바인드 마운트 검증
 
@@ -294,6 +306,11 @@ This page was updated without rebuilding the image.
 Docker 이미지를 다시 빌드하지 않고 호스트 파일의 변경사항이 웹페이지에 반영되는 것을 확인했다.
 
 변경 전후 증거: 스크린샷 추가 예정
+
+### 바인드 마운트 검증
+![변경 전](docs/screenshots/bind-before.png)
+
+![변경 후](docs/screenshots/bind-after.png)
 
 ## 9. Docker 볼륨 영속성 검증
 
@@ -348,6 +365,9 @@ M01 volume test
 기존 컨테이너를 제거하고 새로운 컨테이너에서 같은 볼륨을 연결한 뒤 저장된 데이터를 확인했다.
 
 이를 통해 Docker 볼륨을 사용하면 컨테이너와 별도로 데이터를 유지할 수 있음을 확인했다.
+
+### Docker 볼륨 영속성
+![볼륨 검증](docs/screenshots/volume-after.png)
 
 ## 10. Git 및 GitHub 연동
 
@@ -416,6 +436,11 @@ https://github.com/bomigrace-byte/Codyssey-AIO-M01
 ### 10.6 VS Code 연동
 
 진행 상태: 추가 확인 및 증거 확보 예정
+
+### Git 및 VS Code
+![VS Code와 WSL 연결](docs/screenshots/vscode-wsl.png)
+
+![GitHub README 확인](docs/screenshots/github-readme.png)
 
 ## 11. 트러블슈팅
 
