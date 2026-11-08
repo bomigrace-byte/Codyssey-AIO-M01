@@ -575,7 +575,155 @@ docker stats --no-stream cc4aff576937
 
 CPU·메모리 등 컨테이너 리소스 사용량이 정상 출력되었다.
 
-## 12. 최종 검증 결과 및 제출 현황
+## 12. 보너스 과제 실습 및 검증 (2026-11-08)
+
+필수 미션에서 만든 `my-web/Dockerfile`과 `site/index.html`을 재사용하여 Docker Compose와 GitHub SSH 인증을 실습하였다. 아래 보너스 과제 5개는 **로컬 실습 검증 완료** 상태이며, 본 섹션과 증거 파일의 GitHub 최종 반영은 별도로 확인한다.
+
+### 12.1 Docker Compose 기본 구성 — PASS
+
+`my-web/compose.yaml`에 `web` 서비스를 정의하고, 기존 NGINX 이미지를 빌드하여 호스트의 8083 포트로 실행했다.
+
+```yaml
+services:
+  web:
+    build: .
+    ports:
+      - "8083:80"
+```
+
+```bash
+cd ~/codyssey/m01/my-web
+docker compose config
+docker compose up -d --build
+docker compose ps
+```
+
+**검증 결과:** 서비스 `web`이 `Up`으로 실행되었으며, `http://localhost:8083`에서 웹페이지를 확인했다. 표시된 `Hello Docker Bind Mount!` 문구는 기존 HTML 내용을 이미지에 복사한 결과로, 이 Compose 설정 자체에 바인드 마운트가 포함된 것은 아니다.
+
+![Compose 기본 설정 확인](docs/screenshots/bonus-compose-config.png)
+
+![Compose 웹 서버 8083 접속](docs/screenshots/bonus-compose-browser-8083.png)
+
+### 12.2 멀티 컨테이너와 내부 네트워크 — PASS
+
+기존 `web` 외에 HTTP 요청 테스트용 `tester` 서비스를 추가했다.
+
+```yaml
+  tester:
+    image: curlimages/curl:latest
+    command: ["sleep", "infinity"]
+    depends_on:
+      - web
+```
+
+위 코드는 `services:` 아래 `web`과 같은 깊이에 추가한 부분이다. `depends_on`은 시작 순서를 지정하며 서비스 준비 완료까지 보장하지는 않는다.
+
+```bash
+docker compose config
+docker compose up -d
+docker compose ps
+docker compose exec tester curl -I http://web
+```
+
+**검증 결과:** `web`, `tester` 모두 `Up` 상태였고, `tester`에서 서비스 이름 `web`으로 HTTP 요청을 보내 `HTTP/1.1 200 OK`를 받았다. Compose 기본 네트워크의 서비스 이름 기반 통신을 확인했다.
+
+![두 서비스 동시 실행](docs/screenshots/bonus-multicontainer-up.png)
+
+![컨테이너 간 HTTP 200 응답](docs/screenshots/bonus-internal-network.png)
+
+### 12.3 Docker Compose 운영 — PASS
+
+```bash
+docker compose ps
+docker compose logs --tail=10
+docker compose down
+docker compose ps
+docker compose up -d
+docker compose ps
+```
+
+**검증 결과:** 상태 조회와 로그 확인, Compose 컨테이너 및 기본 네트워크 제거, 서비스 재생성 후 두 컨테이너의 `Up` 상태를 확인했다. 로그 중 `/favicon.ico`의 404는 아이콘 파일 부재로 발생한 부수 요청이며, 웹페이지 요청은 200 응답이었다.
+
+![Compose 로그 및 down 검증](docs/screenshots/bonus-compose-operations.png)
+
+![Compose 재실행 후 두 서비스 Up](docs/screenshots/bonus-compose-restart.png)
+
+### 12.4 환경변수로 웹 서버 포트 변경 — PASS
+
+`my-web/.env`에 `WEB_PORT=8084`를 정의하고, `compose.yaml`의 포트 설정을 환경변수 참조로 변경했다.
+
+```yaml
+services:
+  web:
+    build: .
+    ports:
+      - "${WEB_PORT}:80"
+
+  tester:
+    image: curlimages/curl:latest
+    command: ["sleep", "infinity"]
+    depends_on:
+      - web
+```
+
+```dotenv
+# my-web/.env.example (공개 가능한 예시값)
+WEB_PORT=8084
+```
+
+```bash
+docker compose config
+docker compose up -d
+docker compose ps
+```
+
+**검증 결과:** `docker compose config`에서 `published: "8084"` 확인, 컨테이너 재생성 후 `8084->80/tcp` 확인, `http://localhost:8084` 접속 성공.
+
+보안 및 협업을 위해 실제 `.env`는 `.gitignore`로 제외하고, `.env.example`만 버전 관리 대상으로 유지한다. `.env.example`에는 실제 비밀번호나 API 키를 기록하지 않는다.
+
+![환경변수 치환 결과 8084](docs/screenshots/bonus-env-config.png)
+
+![컨테이너 포트 변경 결과](docs/screenshots/bonus-env-port-mapping.png)
+
+![8084 브라우저 접속](docs/screenshots/bonus-env-browser-8084.png)
+
+![환경 파일 Git 추적 제외 검증](docs/screenshots/bonus-gitignore-verification.png)
+
+### 12.5 GitHub SSH 인증 및 Push — PASS
+
+Ubuntu에서 Ed25519 SSH 키 쌍을 생성하고 공개키를 GitHub 계정에 등록했다. GitHub SSH 인증 테스트에서 성공 메시지를 확인한 뒤, M01 원격 저장소의 인증 방식을 HTTPS에서 SSH로 변경했다.
+
+```bash
+# 공개키를 GitHub에 등록한 후 인증 시험
+ssh -T git@github.com
+
+cd ~/codyssey/m01
+git remote set-url origin git@github.com:bomigrace-byte/Codyssey-AIO-M01.git
+git remote -v
+git push origin main
+```
+
+**검증 결과:** GitHub SSH 인증 성공, `origin`의 fetch/push 주소가 SSH 형식으로 변경됨, `git push origin main`이 `Everything up-to-date`를 반환함. 이는 기존 커밋 기준으로 SSH를 통한 원격 연결이 성공했다는 뜻이며, 보너스 산출물이 새로 업로드되었다는 뜻은 아니다.
+
+개인키(`~/.ssh/id_ed25519`)와 암호는 저장소·README·스크린샷에 포함하지 않는다.
+
+![SSH 원격 주소 및 Push 성공](docs/screenshots/bonus-ssh-push.png)
+
+### 12.6 보너스 과제 검증 요약
+
+| 보너스 과제 | 실습 검증 |
+|---|---|
+| Docker Compose 단일 웹 서비스 | PASS |
+| 두 컨테이너 및 내부 HTTP 통신 | PASS |
+| Compose 운영(`ps`, `logs`, `down`, `up`) | PASS |
+| `.env` 환경변수 포트 변경 | PASS |
+| GitHub SSH 인증 및 Push | PASS |
+
+**실습 산출물:** `my-web/compose.yaml`, `my-web/.env.example`, `docs/screenshots/bonus-*.png`. 실제 `.env`와 SSH 개인키는 GitHub 업로드 대상이 아니다.
+
+---
+
+## 13. 최종 검증 결과 및 제출 현황
 
 | 검증 항목 | 결과 |
 |---|---|
@@ -590,6 +738,8 @@ CPU·메모리 등 컨테이너 리소스 사용량이 정상 출력되었다.
 | GitHub 첫 Push | PASS |
 | VS Code와 WSL 연결 및 GitHub 연동 | PASS |
 | README 스크린샷 링크 및 GitHub 표시 확인 | PASS |
+| M01 보너스 과제 5개 실습 검증 | PASS |
+| 보너스 산출물 GitHub 최종 반영 | 확인 필요 |
 | 신규 환경에서의 전체 재현성 검증 | 미실시 |
 
 ### 제출 전 확인사항
@@ -600,11 +750,11 @@ CPU·메모리 등 컨테이너 리소스 사용량이 정상 출력되었다.
 - [x] 필수 미션 보고서 Git commit 및 push
 - [ ] 개인정보·인증 코드·토큰 노출 여부 최종 점검
 - [ ] 신규 환경에서 전체 실행 절차 재현 검증
-- [ ] 본 README 수정본과 추가 증거를 GitHub에 반영
+- [ ] 보너스 README·Compose 설정·스크린샷을 GitHub에 반영
 
 ---
 
-> **후속 작업:** Docker Compose 기본 구성·운영, 다중 컨테이너, 환경변수, GitHub SSH 인증 보너스 과제는 별도 실습 후 결과를 추가할 예정이다. 현재 README의 PASS 표시는 필수 미션 실습과 기존 GitHub 확인 범위에 한정한다.
+> **후속 확인:** 보너스 과제 5개는 실습 및 로컬 검증을 완료했다. 신규 환경에서의 전체 재현성 검증과 보너스 산출물의 GitHub 최종 반영 여부는 별도 확인한다.
 
 **학습 과정:** 2026 경남이노베이션아카데미 AI 올인원 제1기 입학연수과정
 

@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    ports:
+      - "${WEB_PORT}:80"
+
+  tester:
+    image: curlimages/curl:latest
+    command: ["sleep", "infinity"]
+    depends_on:
+      - web
