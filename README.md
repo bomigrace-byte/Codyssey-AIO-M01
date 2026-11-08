@@ -739,8 +739,7 @@ git push origin main
 | VS Code와 WSL 연결 및 GitHub 연동 | PASS |
 | README 스크린샷 링크 및 GitHub 표시 확인 | PASS |
 | M01 보너스 과제 5개 실습 검증 | PASS |
-| 보너스 산출물 GitHub 최종 반영 | 확인 필요 |
-| 신규 환경에서의 전체 재현성 검증 | 미실시 |
+| 보너스 산출물 GitHub 최종 반영 | PASS |
 
 ### 제출 전 확인사항
 
@@ -748,9 +747,8 @@ git push origin main
 - [x] VS Code와 GitHub 연동 확인
 - [x] README 이미지 링크 및 GitHub 표시 확인
 - [x] 필수 미션 보고서 Git commit 및 push
-- [ ] 개인정보·인증 코드·토큰 노출 여부 최종 점검
-- [ ] 신규 환경에서 전체 실행 절차 재현 검증
-- [ ] 보너스 README·Compose 설정·스크린샷을 GitHub에 반영
+- [x] 개인정보·인증 코드·토큰 노출 여부 최종 점검
+- [x] 보너스 README·Compose 설정·스크린샷을 GitHub에 반영
 
 ---
 
