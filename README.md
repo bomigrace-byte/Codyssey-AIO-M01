@@ -29,11 +29,9 @@
 | Docker Compose | v5.7.0 |
 | Git (Ubuntu) | 2.53.0 |
 | 웹 서버 | NGINX (Alpine 기반) |
-| 에디터 | nano |
+| 에디터 | nano, VS Code (WSL 확장) |
 
----
-
-### Ubuntu 환경 확인
+### 2.1 Ubuntu 환경 확인
 
 WSL2에서 Ubuntu 26.04.1 LTS가 실행되는 것을 확인했다.
 
@@ -53,9 +51,9 @@ WSL2에서 Ubuntu 26.04.1 LTS가 실행되는 것을 확인했다.
 - [x] 바인드 마운트 변경 반영
 - [x] Docker 볼륨 영속성 검증
 - [x] Git 설정 및 GitHub Push
-- [ ] VS Code와 GitHub 연동 증거 확보
-- [ ] 제출용 로그·스크린샷 정리
-- [ ] 트러블슈팅 및 최종 제출 검증
+- [x] VS Code와 GitHub 연동 증거 확보
+- [x] 제출용 로그·스크린샷 정리
+- [x] 트러블슈팅 기록 및 GitHub 제출 결과 확인
 
 ## 4. Linux CLI 실습
 
@@ -128,7 +126,7 @@ drwx------ ... permission-test
 
 ---
 
-### Linux CLI 및 권한 실습
+### 4.3 Linux CLI 및 권한 실습 증거
 ![CLI 실습](docs/screenshots/cli-directory.png)
 
 ![파일 권한](docs/screenshots/permission-file.png)
@@ -155,9 +153,7 @@ Server Version: 29.9.3
 
 Docker CLI와 서버 연결이 정상 작동함을 확인했다.
 
----
-
-### Docker 공식 저장소 설정 및 설치 과정
+### 5.2 Docker 공식 저장소 설정 및 설치 과정
 
 Ubuntu 환경에 Docker 공식 APT 저장소를 구성하고 패키지 목록을 갱신한 뒤 Docker Engine과 Compose 플러그인을 설치했다.
 
@@ -169,7 +165,7 @@ Ubuntu 환경에 Docker 공식 APT 저장소를 구성하고 패키지 목록을
 
 ---
 
-### 5.2 hello-world 실행
+### 5.3 hello-world 실행
 
 ```bash
 docker run hello-world
@@ -185,12 +181,7 @@ Docker 이미지를 사용하여 컨테이너를 생성하고 실행하는 데 �
 
 ---
 
-### Docker 이미지 빌드
-![Docker 빌드](docs/screenshots/docker-build.png)
-
----
-
-### 5.3 Ubuntu 컨테이너 실습
+### 5.4 Ubuntu 컨테이너 실습
 
 ```bash
 docker run -it ubuntu bash
@@ -207,7 +198,7 @@ exit
 
 종료한 컨테이너를 재시작하여 기존 컨테이너에 다시 접속하는 과정도 확인했다.
 
-### 5.4 Docker 운영 명령어
+### 5.5 Docker 운영 명령어
 
 | 명령어 | 검증 내용 |
 |---|---|
@@ -270,6 +261,8 @@ docker images
 - 생성된 이미지: `codyssey-01-web:1.0`
 - 이미지 ID: `3b730966ac6b`
 
+![Docker 이미지 빌드 성공](docs/screenshots/docker-build.png)
+
 ## 7. 포트 매핑 검증
 
 ### 7.1 컨테이너 실행
@@ -307,7 +300,7 @@ Docker 컨테이너의 80 포트와 호스트의 8081 포트를 연결하여 웹
 
 ---
 
-### 실행 결과 스크린샷
+### 7.3 실행 결과 스크린샷
 
 ![Docker 웹 서버 포트 매핑 결과](docs/screenshots/port-8081.png)
 
@@ -341,11 +334,7 @@ This page was updated without rebuilding the image.
 
 Docker 이미지를 다시 빌드하지 않고 호스트 파일의 변경사항이 웹페이지에 반영되는 것을 확인했다.
 
-변경 전후 증거: 스크린샷 추가 예정
-
----
-
-### 바인드 마운트 검증
+### 8.3 바인드 마운트 변경 전후 증거
 ![변경 전](docs/screenshots/bind-before.png)
 
 ![변경 후](docs/screenshots/bind-after.png)
@@ -408,8 +397,11 @@ M01 volume test
 
 ---
 
-### Docker 볼륨 영속성
-![볼륨 검증](docs/screenshots/volume-after.png)
+### 9.5 Docker 볼륨 영속성 증거
+
+![데이터 저장 전 컨테이너 확인](docs/screenshots/volume-before.png)
+
+![컨테이너 교체 후 데이터 유지 확인](docs/screenshots/volume-after.png)
 
 ---
 
@@ -529,6 +521,8 @@ docker run -d -p 8081:80 --name codyssey-m01-web codyssey-01-web:1.0
 
 `docker ps`에서 컨테이너가 실행 중임을 확인했고, 브라우저에서 `localhost:8081` 접속에 성공했다.
 
+![포트 매핑 오류 및 확인 과정](docs/screenshots/troubleshoot-port.png)
+
 ### 사례 2. 바인드 마운트 웹 서버 접속 실패
 
 **문제**
@@ -558,6 +552,8 @@ docker inspect codyssey-m01-bind
 **검증**
 
 `localhost:8082` 접속에 성공했으며, HTML 수정 후 변경사항이 정상 반영되었다.
+
+![바인드 마운트 접속 오류 확인](docs/screenshots/troubleshoot-bind.png)
 
 ### 사례 3. Docker 리소스 확인 명령어 오류
 
@@ -592,19 +588,23 @@ CPU·메모리 등 컨테이너 리소스 사용량이 정상 출력되었다.
 | 바인드 마운트 변경 반영 | PASS |
 | Docker 볼륨 영속성 | PASS |
 | GitHub 첫 Push | PASS |
-| VS Code GitHub 연동 | 확인 예정 |
-| 스크린샷 제출 증거 | 정리 예정 |
-| 최종 재현성 검증 | 확인 예정 |
+| VS Code와 WSL 연결 및 GitHub 연동 | PASS |
+| README 스크린샷 링크 및 GitHub 표시 확인 | PASS |
+| 신규 환경에서의 전체 재현성 검증 | 미실시 |
 
 ### 제출 전 확인사항
 
-- [ ] 필수 수행 로그와 스크린샷 연결
-- [ ] VS Code GitHub 연동 확인
-- [ ] 개인정보·토큰·비밀번호 노출 점검
-- [ ] README 링크 및 실행 절차 재검증
-- [ ] 최종 Git commit 및 push
+- [x] 필수 수행 로그와 스크린샷 연결
+- [x] VS Code와 GitHub 연동 확인
+- [x] README 이미지 링크 및 GitHub 표시 확인
+- [x] 필수 미션 보고서 Git commit 및 push
+- [ ] 개인정보·인증 코드·토큰 노출 여부 최종 점검
+- [ ] 신규 환경에서 전체 실행 절차 재현 검증
+- [ ] 본 README 수정본과 추가 증거를 GitHub에 반영
 
 ---
+
+> **후속 작업:** Docker Compose 기본 구성·운영, 다중 컨테이너, 환경변수, GitHub SSH 인증 보너스 과제는 별도 실습 후 결과를 추가할 예정이다. 현재 README의 PASS 표시는 필수 미션 실습과 기존 GitHub 확인 범위에 한정한다.
 
 **학습 과정:** 2026 경남이노베이션아카데미 AI 올인원 제1기 입학연수과정
 
